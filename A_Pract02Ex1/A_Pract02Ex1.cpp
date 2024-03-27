@@ -1,0 +1,25 @@
+#include <iostream>
+#include <fstream>
+
+void copyFileContent(std::ifstream& input, std::ofstream& output)
+{
+    if (!input.is_open() || !output.is_open())
+    {
+        return;
+    }
+
+    while (!input.eof())
+    {
+        char buff[1024];
+        input.getline(buff, 1024, '|');
+        output << buff;
+    }
+}
+
+int main()
+{
+    std::ifstream input("A_Pract02Ex1.cpp");
+    std::ofstream output("output.txt");
+
+    copyFileContent(input, output);
+}
