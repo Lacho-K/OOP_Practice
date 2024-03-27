@@ -9,7 +9,7 @@ struct Product
 
     void printProduct(std::ostream& out)
     {
-        out << this->description << " " << this->partNum << " " << this->cost << std :: endl;
+        out << this->description << " " << this->partNum << " " << this->cost << std::endl;
     }
 };
 
@@ -23,7 +23,7 @@ void init(Product* prod, size_t length)
     }
 }
 
-void print(Product* prod, size_t length, std::ostream& out) 
+void print(Product* prod, size_t length, std::ostream& out)
 {
     for (size_t i = 0; i < length; i++)
     {
@@ -54,7 +54,7 @@ int main()
     int prodCount = getCountOfProducts(input);
     //std::cin >> prodCount;
     std::cout << prodCount << std::endl;
-    std::ofstream myfile ("test.txt");/*
+    std::ofstream myfile("test.txt");/*
     myfile.open("test.txt");*/
     myfile << prodCount << std::endl;
     Product* products = new Product[prodCount];
