@@ -29,9 +29,9 @@ private:
     unsigned grades[32];
     unsigned gradesCount = 0;
 
-    unsigned calcGradesSum()
+    double calcGradesSum()
     {
-        unsigned sum = 0;
+        double sum = 0;
 
         for (size_t i = 0; i < gradesCount; i++)
         {

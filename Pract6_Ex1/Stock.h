@@ -13,12 +13,14 @@ public:
 
 	void setAbbreviation(const char* abbreviation);
 	void setName(const char* name);
-	void setPrices(unsigned* prices);
+	void setPrices(const unsigned* prices);
+	
+	bool isProfitable();
 
-	Stock() = default;
+	Stock();
 	Stock(const char* abbreviation, const char* name, unsigned* prices);
 	Stock(const Stock& other);
-	//Stock& operator=(const Stock& other);
+	Stock& operator=(const Stock& other);
 
 	~Stock() = default;
 };
