@@ -35,8 +35,8 @@ void replaceInFile(char ch, char ch2, std::fstream& file)
             continue;
 
         file.seekp(-1, std::ios::cur);
-        file << ch2;
-        //file.flush();
+        file.put(ch2);
+        file.flush();
     }
 }
 
