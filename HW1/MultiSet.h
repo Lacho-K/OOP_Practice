@@ -1,15 +1,13 @@
-﻿#pragma once
-#include <iostream>
-
+#pragma once
 class MultiSet {
 private:
     int n;
     int k;
     uint8_t* counts;
     unsigned bucketsCount;
-    unsigned bucketSize;
-    unsigned elementsInBucket;
+    unsigned bucketSize = (sizeof(uint8_t) * 8);
     unsigned maxCount;
+    unsigned elementsInBucket;
 
 public:
     MultiSet(int maxNumber, int maxCountBits);
@@ -24,6 +22,4 @@ private:
     unsigned getBitIndex(unsigned num) const;
     unsigned getBucketIndex(const unsigned num) const;
     int checkBits(unsigned int n, unsigned ind);
-    bool checkBit(uint8_t byte, unsigned ind) const;
-    void makeBitZero(uint8_t& byte, unsigned ind);
 };
