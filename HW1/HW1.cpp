@@ -1,13 +1,35 @@
 ﻿#include<iostream>
+
+unsigned int fromBinaryToDecimal(unsigned int n)
+{
+	unsigned int result = 0;
+	unsigned int mult = 1; //2^0
+	while (n != 0)
+	{
+		result += ((n % 10) * mult);
+		mult *= 2;
+		n /= 10;
+	}
+	return result;
+}
+
 class MultiSet {
 private:
 	int n;
 	int k;
 	uint8_t* counts;
+	unsigned bucketsCount;
+	unsigned bucketSize = (sizeof(uint8_t) * 8);
+	unsigned elementsInBucket;
+	unsigned maxCount;
 
 public:
 	MultiSet(int maxNumber, int maxCountBits) : n(maxNumber), k(maxCountBits) {
-		counts = new uint8_t[n + 1]();
+		bucketsCount = n / (bucketSize / k);
+		bucketSize = (sizeof(uint8_t) * 8);
+		elementsInBucket = bucketSize / k;
+	    maxCount = (1 << k) - 1;
+		counts = new uint8_t[bucketsCount]();
 	}
 
 	~MultiSet() {
@@ -15,17 +37,50 @@ public:
 	}
 
 	void insert(int num) {
-		if (num < 0 || num > n) {
+		if (num < 0 || num > n) 
+		{
 			std::cerr << "Error: Number out of range!" << std::endl;
 			return;
 		}
-		if (counts[num] < (1 << k) - 1) {
-			counts[num]++;
+
+		unsigned bucketIndex = getBucketIndex(num);
+		unsigned bitIndex = getBitIndex(num);
+
+		if (fromBinaryToDecimal(checkBits(counts[bucketIndex], bitIndex)) < maxCount)
+		{
+			counts[bucketIndex] <<= k * bitIndex;
+			counts[bucketIndex] ++;
+			counts[bucketIndex] >>= k * bitIndex;
 		}
-		else {
+		else
+		{
 			std::cerr << "Error: Maximum count reached for number " << num << std::endl;
 		}
 	}
+
+	int checkBits(unsigned int n, unsigned ind)
+	{
+		int result = 0;
+		unsigned int mask = 1;
+		mask <<= ind;
+		for (size_t i = 0; i < k; i++)
+		{
+			(result *= 10) += ((mask & n) == mask);
+			n >>= 1;
+		}
+		return result;
+	}
+
+	unsigned getBitIndex(unsigned num) const
+	{
+		return num / elementsInBucket;
+	}
+
+	unsigned getBucketIndex(const unsigned num) const
+	{
+		return num / bucketSize;
+	}
+
 
 	void remove(int num) {
 		if (num < 0 || num > n) {
