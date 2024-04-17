@@ -16,7 +16,7 @@ unsigned int toBinaryFromDecimal(unsigned int n)
 	return result;
 }
 
-void makeBitZero(uint8_t& n, unsigned int ind) //clear bit
+void makeBitZero(uint8_t& n, unsigned int ind)
 {
 	unsigned int mask = 1;
 	mask <<= ind;
@@ -165,7 +165,7 @@ void MultiSet::printMemoryRepresantation() const
 
 
 int main() {
-	MultiSet ms(10, 2); // Example with numbers from 0 to 10 and up to 2^3 - 1 repetitions
+	MultiSet ms(10, 2);
 
 	ms.insert(5);
 	ms.insert(5);
