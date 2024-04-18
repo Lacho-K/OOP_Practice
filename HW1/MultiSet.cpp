@@ -160,7 +160,7 @@ unsigned MultiSet::checkBits(unsigned currentBucket, unsigned bitIndex, unsigned
 			currentBucket = counts[bucketIndex + 1];
 			mask = 1;
 			(result *= 10) += ((mask & currentBucket) == mask);
-			bitIndex++;
+			bitIndex = 0;
 			mask <<= 1;
 			continue;
 		}
