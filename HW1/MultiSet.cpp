@@ -86,6 +86,7 @@ void MultiSet::insert(int num)
 
 	//std::cout << count(num);
 	std::cout << checkBits(counts[bucketIndex], bitIndex, bucketIndex) << std::endl;
+	//std::cout << checkBit(counts[bucketIndex], bitIndex) << std::endl;
 
 	if (count(num) < maxCount)
 	{
@@ -94,20 +95,20 @@ void MultiSet::insert(int num)
 		unsigned copyOfK = k;
 		mask <<= bitIndex;
 
-		while (checkBit(counts[bucketIndex], bitIndex) && copyOfK > 0)
+		while (checkBit(counts[bucketIndex], bitIndexCopy) && copyOfK > 0)
 		{
 			counts[bucketIndex] ^= mask;
-			if (bitIndexCopy > bucketSize)
-			{
-				bucketIndex++;
-				mask = 1;
-				bitIndex = 0;
-				continue;
-			}
 
 			mask <<= 1;
 			bitIndexCopy++;
 			copyOfK--;
+
+			if (bitIndexCopy >= bucketSize)
+			{
+				bucketIndex++;
+				mask = 1;
+				bitIndexCopy = 0;
+			}
 		}
 
 		counts[bucketIndex] |= mask;
@@ -164,7 +165,7 @@ unsigned MultiSet::checkBits(unsigned currentBucket, unsigned bitIndex, unsigned
 			mask <<= 1;
 			continue;
 		}
-		(result *= 10) += ((mask & currentBucket) == mask);
+		(result *= 10) += checkBit(counts[bucketIndex], bitIndex);
 		bitIndex++;
 		mask <<= 1;
 	}
@@ -188,6 +189,37 @@ unsigned MultiSet::count(unsigned num) const
 	unsigned bitIndex = getBitIndex(num);
 	return fromBinaryToDecimal(checkBits(counts[bucketIndex], bitIndex, bucketIndex));
 }
+
+//unsigned MultiSet::count(unsigned num) const
+//{
+//	unsigned bucketIndex = getBucketIndex(num);
+//	unsigned bitIndex = getBitIndex(num);
+//	unsigned count = 0;
+//
+//	uint8_t& bucket = counts[bucketIndex];
+//	uint8_t mask = 1 << bitIndex;
+//
+//	for (uint8_t i = 0; i < k; i++)
+//	{
+//		if (mask & counts[bucketIndex])
+//		{
+//			count++;
+//		}
+//		else if (mask == 0)
+//		{
+//			mask = 1;
+//			bucketIndex++;
+//			if (mask & counts[bucketIndex])
+//			{
+//				count++;
+//			}
+//		}
+//		mask << 1;
+//	}
+//
+//	return count;
+//
+//}
 
 void MultiSet::printAll() const {
 	std::cout << '{' << " ";
@@ -213,7 +245,10 @@ int main() {
 	MultiSet ms(10, 3);
 
 	ms.insert(5);
-	//ms.insert(5);
+	ms.insert(5);
+	ms.insert(5);
+	ms.insert(5);
+	ms.insert(5);
 
 	ms.printAll();
 
