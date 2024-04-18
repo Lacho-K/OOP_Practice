@@ -1,18 +1,24 @@
 ﻿#include<iostream>
 #include "MultiSet.h"
 
-static unsigned int reverse(unsigned int n)
+static unsigned getClosestPowerOfTwo(unsigned v)
 {
-	unsigned reversedNumber = 0;
+	v--;
+	v |= v >> 1;
+	v |= v >> 2;
+	v |= v >> 4;
+	v |= v >> 8;
+	v |= v >> 16;
+	v++;
 
-	while (n != 0)
+	unsigned power = 0;
+	while (v)
 	{
-		unsigned int lastDigit = n % 10;
-		(reversedNumber *= 10) += lastDigit;
-		n /= 10; //removes the last digit
+		power++;
+		v /= 2;
 	}
-	return reversedNumber;
 
+	return power - 1;
 }
 
 static unsigned int toBinaryFromDecimal(unsigned int n)
@@ -25,19 +31,6 @@ static unsigned int toBinaryFromDecimal(unsigned int n)
 			result += mult;
 		mult *= 10;
 		n /= 2;
-	}
-	return result;
-}
-
-static unsigned fromBinaryToDecimal(unsigned n)
-{
-	unsigned result = 0;
-	unsigned mult = 1; //2^0
-	while (n != 0)
-	{
-		result += ((n % 10) * mult);
-		mult *= 2;
-		n /= 10;
 	}
 	return result;
 }
@@ -59,17 +52,52 @@ static bool checkBit(unsigned int n, unsigned ind)
 	return (mask & n) == mask;
 }
 
+void MultiSet::copyFrom(const MultiSet& other)
+{
+	counts = new uint8_t[other.bucketsCount]();
+
+	for (size_t i = 0; i < other.bucketsCount; i++)
+	{
+		counts[i] = other.counts[i];
+	}
+
+	n = other.n;
+	k = other.k;
+
+	bucketsCount = ((n * k) / bucketSize) + 1;
+	maxCount = (1 << k) - 1;
+}
+
+void MultiSet::free()
+{
+	delete[] counts;
+	counts = nullptr;
+}
 
 MultiSet::MultiSet(int maxNumber, int maxCountBits) : n(maxNumber), k(maxCountBits) {
 	bucketsCount = ((n * k) / bucketSize) + 1;
-	bucketSize = (sizeof(uint8_t) * 8);
-	//elementsInBucket = bucketSize / k;
 	maxCount = (1 << k) - 1;
 	counts = new uint8_t[bucketsCount]();
 }
 
+MultiSet::MultiSet(const MultiSet& other)
+{
+	copyFrom(other);
+}
+
+MultiSet& MultiSet::operator=(const MultiSet& other)
+{
+	if (this != &other)
+	{
+		free();
+		copyFrom(other);
+	}
+
+	return *this;
+}
+
 MultiSet::~MultiSet() {
-	delete[] counts;
+	free();
 }
 
 void MultiSet::insert(int num)
@@ -84,20 +112,17 @@ void MultiSet::insert(int num)
 	unsigned bucketIndex = getBucketIndex(num);
 	unsigned bitIndex = getBitIndex(num);
 
-	//std::cout << count(num);
-	std::cout << checkBits(counts[bucketIndex], bitIndex, bucketIndex) << std::endl;
-	//std::cout << checkBit(counts[bucketIndex], bitIndex) << std::endl;
-
 	if (count(num) < maxCount)
 	{
 		unsigned mask = 1;
 		unsigned bitIndexCopy = bitIndex;
 		unsigned copyOfK = k;
+		unsigned copyOfBucketIndex = bucketIndex;
 		mask <<= bitIndex;
 
-		while (checkBit(counts[bucketIndex], bitIndexCopy) && copyOfK > 0)
+		while (checkBit(counts[copyOfBucketIndex], bitIndexCopy) && copyOfK > 0)
 		{
-			counts[bucketIndex] ^= mask;
+			counts[copyOfBucketIndex] ^= mask;
 
 			mask <<= 1;
 			bitIndexCopy++;
@@ -105,13 +130,13 @@ void MultiSet::insert(int num)
 
 			if (bitIndexCopy >= bucketSize)
 			{
-				bucketIndex++;
+				copyOfBucketIndex++;
 				mask = 1;
 				bitIndexCopy = 0;
 			}
 		}
 
-		counts[bucketIndex] |= mask;
+		counts[copyOfBucketIndex] |= mask;
 	}
 	else
 	{
@@ -133,43 +158,53 @@ void MultiSet::remove(int num) {
 
 		unsigned mask = 1;
 		unsigned bitIndexCopy = bitIndex;
+		unsigned copyOfK = k;
+		unsigned copyOfBucketIndex = bucketIndex;
 		mask <<= bitIndex;
 
-		while (!checkBit(counts[bucketIndex], bitIndex) && bitIndexCopy < (bitIndex + k))
+		while (!checkBit(counts[copyOfBucketIndex], bitIndexCopy) && copyOfK > 0)
 		{
-			counts[bucketIndex] |= mask;
+			counts[copyOfBucketIndex] |= mask;
+
 			mask <<= 1;
 			bitIndexCopy++;
+			copyOfK--;
+
+			if (bitIndexCopy >= bucketSize)
+			{
+				copyOfBucketIndex++;
+				mask = 1;
+				bitIndexCopy = 0;
+			}
 		}
 
-		makeBitZero(counts[bucketIndex], bitIndexCopy);
+		makeBitZero(counts[copyOfBucketIndex], bitIndexCopy);
 	}
 	else {
 		std::cerr << "Error: Number " << num << " not found!" << std::endl;
 	}
 }
 
-unsigned MultiSet::checkBits(unsigned currentBucket, unsigned bitIndex, unsigned bucketIndex) const
+unsigned MultiSet::getCountNumber(unsigned bitIndex, unsigned bucketIndex) const
 {
-	int result = 0;
-	unsigned int mask = 1;
-	mask <<= bitIndex;
+	unsigned resultMask = 0;
+	
 	for (size_t i = 0; i < k; i++)
 	{
-		if (bitIndex >= bucketSize)
+	    if (bitIndex >= bucketSize)
 		{
-			currentBucket = counts[bucketIndex + 1];
-			mask = 1;
-			(result *= 10) += ((mask & currentBucket) == mask);
+			bucketIndex++;
 			bitIndex = 0;
-			mask <<= 1;
+			resultMask |= (checkBit(counts[bucketIndex], bitIndex) << i);
+			bitIndex++;
 			continue;
 		}
-		(result *= 10) += checkBit(counts[bucketIndex], bitIndex);
+
+		resultMask |= (checkBit(counts[bucketIndex], bitIndex) << i);
 		bitIndex++;
-		mask <<= 1;
 	}
-	return result;
+
+	return resultMask;
 }
 
 unsigned MultiSet::getBitIndex(unsigned num) const
@@ -187,43 +222,12 @@ unsigned MultiSet::count(unsigned num) const
 {
 	unsigned bucketIndex = getBucketIndex(num);
 	unsigned bitIndex = getBitIndex(num);
-	return fromBinaryToDecimal(checkBits(counts[bucketIndex], bitIndex, bucketIndex));
+	return getCountNumber(bitIndex, bucketIndex);
 }
-
-//unsigned MultiSet::count(unsigned num) const
-//{
-//	unsigned bucketIndex = getBucketIndex(num);
-//	unsigned bitIndex = getBitIndex(num);
-//	unsigned count = 0;
-//
-//	uint8_t& bucket = counts[bucketIndex];
-//	uint8_t mask = 1 << bitIndex;
-//
-//	for (uint8_t i = 0; i < k; i++)
-//	{
-//		if (mask & counts[bucketIndex])
-//		{
-//			count++;
-//		}
-//		else if (mask == 0)
-//		{
-//			mask = 1;
-//			bucketIndex++;
-//			if (mask & counts[bucketIndex])
-//			{
-//				count++;
-//			}
-//		}
-//		mask << 1;
-//	}
-//
-//	return count;
-//
-//}
 
 void MultiSet::printAll() const {
 	std::cout << '{' << " ";
-	for (unsigned i = 0; i <= n; ++i) {
+	for (unsigned i = 0; i < n; ++i) {
 		unsigned count = this->count(i);
 		for (unsigned j = 0; j < count; ++j) {
 			std::cout << i << " ";
@@ -240,34 +244,97 @@ void MultiSet::printMemoryRepresantation() const
 	}
 }
 
+static MultiSet unionOfSets(const MultiSet& lhs, const MultiSet& rhs)
+{
+	unsigned resultN = std::max(lhs.n, rhs.n);
+	unsigned resultK = getClosestPowerOfTwo(lhs.maxCount + rhs.maxCount);
+	MultiSet resultMS(resultN, resultK);
+
+	for (size_t i = 0; i < lhs.n; i++)
+	{
+		unsigned insertCount = lhs.count(i);
+		for (size_t j = 0; j < insertCount; j++)
+		{
+			resultMS.insert(i);
+		}
+	}
+	
+	for (size_t i = 0; i < rhs.n; i++)
+	{
+		unsigned insertCount = rhs.count(i);
+		for (size_t j = 0; j < insertCount; j++)
+		{
+			resultMS.insert(i);
+		}
+	}
+
+	return resultMS;
+}
+
+static MultiSet intersectionOfSets(const MultiSet& lhs, const MultiSet& rhs)
+{
+	unsigned resultN = std::min(lhs.n, rhs.n);
+	unsigned resultK = std::min(lhs.k, rhs.k);
+	MultiSet resultMS(resultN, resultK);
+
+	for (size_t i = 0; i < resultN; i++)
+	{
+		unsigned insertCount = std::min(lhs.count(i), rhs.count(i));
+
+		for (size_t j = 0; j < insertCount; j++)
+		{
+			resultMS.insert(i);
+		}
+
+	}
+
+	return resultMS;
+}
+
+static MultiSet additionOfSet(const MultiSet& set)
+{
+	MultiSet resultMS(set.n, set.k);
+
+	for (size_t i = 0; i < set.n; i++)
+	{
+		unsigned insertCount = set.maxCount - set.count(i);
+		for (size_t j = 0; j < insertCount; j++)
+		{
+			resultMS.insert(i);
+		}
+	}
+
+	return resultMS;
+}
+
 
 int main() {
-	MultiSet ms(10, 3);
+	MultiSet ms1(10, 5);
+	MultiSet ms2(10, 2);
 
-	ms.insert(5);
-	ms.insert(5);
-	ms.insert(5);
-	ms.insert(5);
-	ms.insert(5);
+	ms1.insert(5);
+	ms1.insert(5);
+	ms1.insert(5);
+	ms1.insert(1);
+	ms1.insert(1);
+	ms1.insert(1);
+	ms1.insert(8);
 
-	ms.printAll();
+	ms2.insert(5);
+	ms2.insert(5);
+	ms2.insert(8);
+	ms2.insert(8);
+	ms2.insert(7);
+	ms2.insert(7);
+	ms2.insert(6);
+	ms2.insert(6);
+	ms2.insert(6);
 
-	/*ms.remove(5);
+	MultiSet unionSet = unionOfSets(ms1, ms2);
+	MultiSet interseCtionSet = intersectionOfSets(ms1, ms2);
+	MultiSet additionSet = additionOfSet(ms2);
 
-	ms.insert(7);
-
-	ms.remove(7);
-
-	ms.insert(1);
-	ms.insert(1);
-	ms.insert(1);
-
-	ms.remove(1);
-	ms.remove(1);
-	ms.insert(2);
-	ms.printAll();
-	ms.printMemoryRepresantation();
-	ms.insert(7);*/
-
-	return 0;
+	unionSet.printAll();
+	interseCtionSet.printAll();
+	additionSet.printAll();
 }
