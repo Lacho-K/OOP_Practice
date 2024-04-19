@@ -22,7 +22,7 @@ static unsigned getClosestPowerOfTwo(unsigned v)
 	return power - 1;
 }
 
-static unsigned int toBinaryFromDecimal(unsigned int n)
+static unsigned toBinaryFromDecimal(unsigned int n)
 {
 	int result = 0;
 	int mult = 1;
@@ -75,7 +75,8 @@ void MultiSet::free()
 	buckets = nullptr;
 }
 
-MultiSet::MultiSet(int maxNumber, int maxCountBits) {
+MultiSet::MultiSet(int maxNumber, int maxCountBits) 
+{
 	n = maxNumber;
 	k = maxCountBits;
 	bucketsCount = ((n * k) / BUCKET_SIZE) + 1;
@@ -100,7 +101,8 @@ MultiSet& MultiSet::operator=(const MultiSet& other)
 	return *this;
 }
 
-MultiSet::~MultiSet() {
+MultiSet::~MultiSet()
+{
 	free();
 }
 
@@ -148,9 +150,11 @@ void MultiSet::insert(int num)
 	}
 }
 
-void MultiSet::remove(int num) {
+void MultiSet::remove(int num) 
+{
 
-	if (num < 0 || num > n) {
+	if (num < 0 || num > n) 
+	{
 		std::cerr << "Error: Number out of range!" << std::endl;
 		return;
 	}
@@ -158,7 +162,8 @@ void MultiSet::remove(int num) {
 	unsigned bucketIndex = getBucketIndex(num);
 	unsigned bitIndex = getBitIndex(num);
 
-	if (count(num) > 0) {
+	if (count(num) > 0) 
+	{
 
 		unsigned mask = 1;
 		unsigned bitIndexCopy = bitIndex;
@@ -184,7 +189,8 @@ void MultiSet::remove(int num) {
 
 		makeBitZero(buckets[copyOfBucketIndex], bitIndexCopy);
 	}
-	else {
+	else 
+	{
 		std::cerr << "Error: Number " << num << " not found!" << std::endl;
 	}
 }
@@ -229,11 +235,14 @@ unsigned MultiSet::count(unsigned num) const
 	return getCountBits(bitIndex, bucketIndex);
 }
 
-void MultiSet::printAll() const {
+void MultiSet::printAll() const 
+{
 	std::cout << '{' << " ";
-	for (unsigned i = 0; i < n; ++i) {
+	for (unsigned i = 0; i < n; ++i) 
+	{
 		unsigned count = this->count(i);
-		for (unsigned j = 0; j < count; ++j) {
+		for (unsigned j = 0; j < count; ++j) 
+		{
 			std::cout << i << " ";
 		}
 	}
@@ -275,21 +284,11 @@ static MultiSet unionOfSets(const MultiSet& lhs, const MultiSet& rhs)
 	return resultMS;
 }
 
-size_t getFileSize(std::ifstream& f)
-{
-	size_t currentPos = f.tellg();
-	f.seekg(0, std::ios::end);
-	size_t size = f.tellg();
-
-	f.seekg(currentPos);
-	return size;
-}
-
-
 void serialize(std::ofstream& ofs, const MultiSet& set)
 {
 	ofs.write((const char*)&set.n, sizeof(set.n));
 	ofs.write((const char*)&set.k, sizeof(set.k));
+
 	for (size_t i = 0; i < set.bucketsCount; i++)
 	{
 		ofs.write((const char*)&set.buckets[i], sizeof(set.buckets[i]));
@@ -355,7 +354,8 @@ static MultiSet additionOfSet(const MultiSet& set)
 }
 
 
-int main() {
+int main()
+{
 	MultiSet ms1(10, 5);
 	MultiSet ms2(15, 2);
 
@@ -379,6 +379,12 @@ int main() {
 
 	ms1.printAll();
 	ms2.printAll();
+
+	std::cout << std::endl;
+	ms1.printMemoryRepresantation();
+	std::cout << std::endl;
+	ms2.printMemoryRepresantation();
+	std::cout << std::endl;
 
 	MultiSet serializeSet(15, 5);
 
