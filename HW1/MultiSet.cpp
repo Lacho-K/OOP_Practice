@@ -55,11 +55,11 @@ static bool checkBit(unsigned int n, unsigned ind)
 
 void MultiSet::copyFrom(const MultiSet& other)
 {
-	counts = new uint8_t[other.bucketsCount]();
+	buckets = new uint8_t[other.bucketsCount]();
 
 	for (size_t i = 0; i < other.bucketsCount; i++)
 	{
-		counts[i] = other.counts[i];
+		buckets[i] = other.buckets[i];
 	}
 
 	n = other.n;
@@ -71,21 +71,16 @@ void MultiSet::copyFrom(const MultiSet& other)
 
 void MultiSet::free()
 {
-	delete[] counts;
-	counts = nullptr;
+	delete[] buckets;
+	buckets = nullptr;
 }
 
-MultiSet::MultiSet(int maxNumber, int maxCountBits) : n(maxNumber), k(maxCountBits) {
+MultiSet::MultiSet(int maxNumber, int maxCountBits) {
+	n = maxNumber;
+	k = maxCountBits;
 	bucketsCount = ((n * k) / BUCKET_SIZE) + 1;
 	maxCount = (1 << k) - 1;
-	counts = new uint8_t[bucketsCount]();
-}
-
-MultiSet::MultiSet(int maxNumber, int maxCountBits, uint8_t* counts)
-{
-	bucketsCount = ((n * k) / BUCKET_SIZE) + 1;
-	maxCount = (1 << k) - 1;
-	this->counts = counts;
+	buckets = new uint8_t[bucketsCount]();
 }
 
 
@@ -129,9 +124,9 @@ void MultiSet::insert(int num)
 		unsigned copyOfBucketIndex = bucketIndex;
 		mask <<= bitIndex;
 
-		while (checkBit(counts[copyOfBucketIndex], bitIndexCopy) && copyOfK > 0)
+		while (checkBit(buckets[copyOfBucketIndex], bitIndexCopy) && copyOfK > 0)
 		{
-			counts[copyOfBucketIndex] ^= mask;
+			buckets[copyOfBucketIndex] ^= mask;
 
 			mask <<= 1;
 			bitIndexCopy++;
@@ -145,7 +140,7 @@ void MultiSet::insert(int num)
 			}
 		}
 
-		counts[copyOfBucketIndex] |= mask;
+		buckets[copyOfBucketIndex] |= mask;
 	}
 	else
 	{
@@ -171,9 +166,9 @@ void MultiSet::remove(int num) {
 		unsigned copyOfBucketIndex = bucketIndex;
 		mask <<= bitIndex;
 
-		while (!checkBit(counts[copyOfBucketIndex], bitIndexCopy) && copyOfK > 0)
+		while (!checkBit(buckets[copyOfBucketIndex], bitIndexCopy) && copyOfK > 0)
 		{
-			counts[copyOfBucketIndex] |= mask;
+			buckets[copyOfBucketIndex] |= mask;
 
 			mask <<= 1;
 			bitIndexCopy++;
@@ -187,14 +182,14 @@ void MultiSet::remove(int num) {
 			}
 		}
 
-		makeBitZero(counts[copyOfBucketIndex], bitIndexCopy);
+		makeBitZero(buckets[copyOfBucketIndex], bitIndexCopy);
 	}
 	else {
 		std::cerr << "Error: Number " << num << " not found!" << std::endl;
 	}
 }
 
-unsigned MultiSet::getCountNumber(unsigned bitIndex, unsigned bucketIndex) const
+unsigned MultiSet::getCountBits(unsigned bitIndex, unsigned bucketIndex) const
 {
 	unsigned resultMask = 0;
 
@@ -204,12 +199,12 @@ unsigned MultiSet::getCountNumber(unsigned bitIndex, unsigned bucketIndex) const
 		{
 			bucketIndex++;
 			bitIndex = 0;
-			resultMask |= (checkBit(counts[bucketIndex], bitIndex) << i);
+			resultMask |= (checkBit(buckets[bucketIndex], bitIndex) << i);
 			bitIndex++;
 			continue;
 		}
 
-		resultMask |= (checkBit(counts[bucketIndex], bitIndex) << i);
+		resultMask |= (checkBit(buckets[bucketIndex], bitIndex) << i);
 		bitIndex++;
 	}
 
@@ -231,7 +226,7 @@ unsigned MultiSet::count(unsigned num) const
 {
 	unsigned bucketIndex = getBucketIndex(num);
 	unsigned bitIndex = getBitIndex(num);
-	return getCountNumber(bitIndex, bucketIndex);
+	return getCountBits(bitIndex, bucketIndex);
 }
 
 void MultiSet::printAll() const {
@@ -249,7 +244,7 @@ void MultiSet::printMemoryRepresantation() const
 {
 	for (unsigned i = 0; i < bucketsCount; i++)
 	{
-		std::cout << "Bucket " << i << ":" << toBinaryFromDecimal(counts[i]) << std::endl;
+		std::cout << "Bucket " << i << ":" << toBinaryFromDecimal(buckets[i]) << std::endl;
 	}
 }
 
@@ -297,7 +292,7 @@ void serialize(std::ofstream& ofs, const MultiSet& set)
 	ofs.write((const char*)&set.k, sizeof(set.k));
 	for (size_t i = 0; i < set.bucketsCount; i++)
 	{
-		ofs.write((const char*)&set.counts[i], sizeof(set.counts[i]));
+		ofs.write((const char*)&set.buckets[i], sizeof(set.buckets[i]));
 	}
 	
 	ofs.close();
@@ -315,7 +310,7 @@ MultiSet deserialize(std::ifstream& ifs)
 
 	for (size_t i = 0; i < resultSet.bucketsCount; i++)
 	{
-		ifs.read((char*)&resultSet.counts[i], sizeof(resultSet.counts[i]));
+		ifs.read((char*)&resultSet.buckets[i], sizeof(resultSet.buckets[i]));
 	}
 
 	ifs.close();
@@ -362,7 +357,7 @@ static MultiSet additionOfSet(const MultiSet& set)
 
 int main() {
 	MultiSet ms1(10, 5);
-	MultiSet ms2(10, 2);
+	MultiSet ms2(15, 2);
 
 	ms1.insert(5);
 	ms1.insert(5);
@@ -382,18 +377,28 @@ int main() {
 	ms2.insert(6);
 	ms2.insert(6);
 
-	MultiSet serializeSet(15, 2);
+	ms1.printAll();
+	ms2.printAll();
+
+	MultiSet serializeSet(15, 5);
 
 	std::ofstream ofs("test.dat", std::ios::binary);
+
+	if (!ofs.is_open())
+		return -1;
 
 	serializeSet.insert(1);
 	serializeSet.insert(2);
 	serializeSet.insert(3);
 	serializeSet.insert(4);
+	serializeSet.insert(4);
 
     serialize(ofs, serializeSet);
 	
 	std::ifstream ifs("test.dat", std::ios::binary);
+
+	if (!ifs.is_open())
+		return -1;
 
 	MultiSet deserializeSet =  deserialize(ifs);
 
@@ -403,7 +408,7 @@ int main() {
 	MultiSet interseCtionSet = intersectionOfSets(ms1, ms2);
 	MultiSet additionSet = additionOfSet(ms2);
 
-	/*unionSet.printAll();
+	unionSet.printAll();
 	interseCtionSet.printAll();
-	additionSet.printAll();*/
+	additionSet.printAll();
 }

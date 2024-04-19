@@ -5,7 +5,7 @@ constexpr unsigned BUCKET_SIZE = (sizeof(uint8_t) * 8);
 
 class MultiSet {
 private:
-    uint8_t* counts;
+    uint8_t* buckets;
     unsigned n;
     int k;
     unsigned bucketsCount;
@@ -15,7 +15,6 @@ private:
 
 public:
     MultiSet(int maxNumber, int maxCountBits);
-    MultiSet(int maxNumber, int maxCountBits, uint8_t* counts);
     MultiSet(const MultiSet& other);
     MultiSet& operator=(const MultiSet& other);
     ~MultiSet();
@@ -34,5 +33,5 @@ public:
 private:
     unsigned getBitIndex(unsigned num) const;
     unsigned getBucketIndex(const unsigned num) const;
-    unsigned getCountNumber(unsigned bitIndex, unsigned bucketIndex) const;
+    unsigned getCountBits(unsigned bitIndex, unsigned bucketIndex) const;
 };
