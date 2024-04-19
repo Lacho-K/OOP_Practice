@@ -1,4 +1,5 @@
 ﻿#include<iostream>
+#include<fstream>
 #include "MultiSet.h"
 
 static unsigned getClosestPowerOfTwo(unsigned v)
@@ -64,7 +65,7 @@ void MultiSet::copyFrom(const MultiSet& other)
 	n = other.n;
 	k = other.k;
 
-	bucketsCount = ((n * k) / bucketSize) + 1;
+	bucketsCount = ((n * k) / BUCKET_SIZE) + 1;
 	maxCount = (1 << k) - 1;
 }
 
@@ -75,10 +76,18 @@ void MultiSet::free()
 }
 
 MultiSet::MultiSet(int maxNumber, int maxCountBits) : n(maxNumber), k(maxCountBits) {
-	bucketsCount = ((n * k) / bucketSize) + 1;
+	bucketsCount = ((n * k) / BUCKET_SIZE) + 1;
 	maxCount = (1 << k) - 1;
 	counts = new uint8_t[bucketsCount]();
 }
+
+MultiSet::MultiSet(int maxNumber, int maxCountBits, uint8_t* counts)
+{
+	bucketsCount = ((n * k) / BUCKET_SIZE) + 1;
+	maxCount = (1 << k) - 1;
+	this->counts = counts;
+}
+
 
 MultiSet::MultiSet(const MultiSet& other)
 {
@@ -128,7 +137,7 @@ void MultiSet::insert(int num)
 			bitIndexCopy++;
 			copyOfK--;
 
-			if (bitIndexCopy >= bucketSize)
+			if (bitIndexCopy >= BUCKET_SIZE)
 			{
 				copyOfBucketIndex++;
 				mask = 1;
@@ -170,7 +179,7 @@ void MultiSet::remove(int num) {
 			bitIndexCopy++;
 			copyOfK--;
 
-			if (bitIndexCopy >= bucketSize)
+			if (bitIndexCopy >= BUCKET_SIZE)
 			{
 				copyOfBucketIndex++;
 				mask = 1;
@@ -188,10 +197,10 @@ void MultiSet::remove(int num) {
 unsigned MultiSet::getCountNumber(unsigned bitIndex, unsigned bucketIndex) const
 {
 	unsigned resultMask = 0;
-	
+
 	for (size_t i = 0; i < k; i++)
 	{
-	    if (bitIndex >= bucketSize)
+		if (bitIndex >= BUCKET_SIZE)
 		{
 			bucketIndex++;
 			bitIndex = 0;
@@ -209,16 +218,16 @@ unsigned MultiSet::getCountNumber(unsigned bitIndex, unsigned bucketIndex) const
 
 unsigned MultiSet::getBitIndex(unsigned num) const
 {
-	return (num * k) % bucketSize;
+	return (num * k) % BUCKET_SIZE;
 }
 
 unsigned MultiSet::getBucketIndex(const unsigned num) const
 {
-	return (num * k) / bucketSize;
+	return (num * k) / BUCKET_SIZE;
 }
 
 
-unsigned MultiSet::count(unsigned num) const 
+unsigned MultiSet::count(unsigned num) const
 {
 	unsigned bucketIndex = getBucketIndex(num);
 	unsigned bitIndex = getBitIndex(num);
@@ -258,7 +267,7 @@ static MultiSet unionOfSets(const MultiSet& lhs, const MultiSet& rhs)
 			resultMS.insert(i);
 		}
 	}
-	
+
 	for (size_t i = 0; i < rhs.n; i++)
 	{
 		unsigned insertCount = rhs.count(i);
@@ -269,6 +278,49 @@ static MultiSet unionOfSets(const MultiSet& lhs, const MultiSet& rhs)
 	}
 
 	return resultMS;
+}
+
+size_t getFileSize(std::ifstream& f)
+{
+	size_t currentPos = f.tellg();
+	f.seekg(0, std::ios::end);
+	size_t size = f.tellg();
+
+	f.seekg(currentPos);
+	return size;
+}
+
+
+void serialize(std::ofstream& ofs, const MultiSet& set)
+{
+	ofs.write((const char*)&set.n, sizeof(set.n));
+	ofs.write((const char*)&set.k, sizeof(set.k));
+	for (size_t i = 0; i < set.bucketsCount; i++)
+	{
+		ofs.write((const char*)&set.counts[i], sizeof(set.counts[i]));
+	}
+	
+	ofs.close();
+}
+
+MultiSet deserialize(std::ifstream& ifs)
+{
+	unsigned n;
+	unsigned k;
+
+	ifs.read((char*)&n, sizeof(n));
+	ifs.read((char*)&k, sizeof(k));
+
+	MultiSet resultSet(n, k);
+
+	for (size_t i = 0; i < resultSet.bucketsCount; i++)
+	{
+		ifs.read((char*)&resultSet.counts[i], sizeof(resultSet.counts[i]));
+	}
+
+	ifs.close();
+
+	return resultSet;
 }
 
 static MultiSet intersectionOfSets(const MultiSet& lhs, const MultiSet& rhs)
@@ -330,11 +382,28 @@ int main() {
 	ms2.insert(6);
 	ms2.insert(6);
 
+	MultiSet serializeSet(15, 2);
+
+	std::ofstream ofs("test.dat", std::ios::binary);
+
+	serializeSet.insert(1);
+	serializeSet.insert(2);
+	serializeSet.insert(3);
+	serializeSet.insert(4);
+
+    serialize(ofs, serializeSet);
+	
+	std::ifstream ifs("test.dat", std::ios::binary);
+
+	MultiSet deserializeSet =  deserialize(ifs);
+
+	deserializeSet.printAll();
+
 	MultiSet unionSet = unionOfSets(ms1, ms2);
 	MultiSet interseCtionSet = intersectionOfSets(ms1, ms2);
 	MultiSet additionSet = additionOfSet(ms2);
 
-	unionSet.printAll();
+	/*unionSet.printAll();
 	interseCtionSet.printAll();
-	additionSet.printAll();
+	additionSet.printAll();*/
 }
