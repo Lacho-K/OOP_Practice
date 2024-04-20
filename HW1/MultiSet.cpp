@@ -284,7 +284,7 @@ static MultiSet unionOfSets(const MultiSet& lhs, const MultiSet& rhs)
 	return resultMS;
 }
 
-void serialize(std::ofstream& ofs, const MultiSet& set)
+static void serialize(std::ofstream& ofs, const MultiSet& set)
 {
 	ofs.write((const char*)&set.n, sizeof(set.n));
 	ofs.write((const char*)&set.k, sizeof(set.k));
@@ -297,7 +297,7 @@ void serialize(std::ofstream& ofs, const MultiSet& set)
 	ofs.close();
 }
 
-MultiSet deserialize(std::ifstream& ifs)
+static MultiSet deserialize(std::ifstream& ifs)
 {
 	unsigned n;
 	unsigned k;
@@ -406,7 +406,7 @@ int main()
 	if (!ifs.is_open())
 		return -1;
 
-	MultiSet deserializeSet =  deserialize(ifs);
+	MultiSet deserializeSet = deserialize(ifs);
 
 	deserializeSet.printAll();
 
