@@ -1,0 +1,154 @@
+#include "StudentArray.h"
+#include <iostream>
+
+void StudentArray::free()
+{
+	delete[] students;
+	count = 0;
+	capacity = 0;
+}
+
+void StudentArray::copyfrom(const StudentArray& other)
+{
+	for (size_t i = 0; i < other.size(); i++)
+	{
+		pushBack(other.at(i));
+	}
+}
+
+void StudentArray::moveFrom(StudentArray&& other)
+{
+	for (size_t i = 0; i < other.size(); i++)
+	{
+		pushBack(std::move(other.at(i)));
+	}
+}
+
+void StudentArray::resize()
+{
+	Student* newArr = new Student[capacity * 2];
+	for (size_t i = 0; i < count; i++)
+	{
+		newArr[i] = students[i];
+	}
+	delete[] students;
+	students = newArr;
+}
+
+StudentArray::StudentArray()
+{
+	students = new Student[capacity]();
+	count = 0;
+	capacity = 8;
+}
+
+StudentArray::StudentArray(const StudentArray& other)
+{
+	copyfrom(other);
+}
+
+StudentArray::StudentArray(StudentArray&& other) noexcept
+{
+	moveFrom(std::move(other));
+}
+
+StudentArray& StudentArray::operator=(const StudentArray& other)
+{
+	if (this != &other)
+	{
+		free();
+		copyfrom(other);
+	}
+	return *this;
+}
+
+StudentArray& StudentArray::operator=(StudentArray&& other) noexcept
+{
+	if (this != &other)
+	{
+		free();
+		moveFrom(std::move(other));
+	}
+	return *this;
+}
+
+void StudentArray::pushBack(const Student& student)
+{
+	if (count == capacity)
+		resize();
+
+	unsigned index = count++;
+
+	students[index].setFn(student.getFn());
+	students[index].setName(student.getName());
+	students[index].setSpeciality(student.getSpeciality());
+}
+
+void StudentArray::pushBack(Student&& student)
+{
+	if (count == capacity)
+		resize();
+
+	students[count++] = student;
+}
+
+void StudentArray::pushFront(const Student& student)
+{
+	if (count == capacity)
+		resize();
+
+	for (size_t i = 0; i < count; i++)
+	{
+		students[i + 1] = students[i];
+	}
+
+	Student copyStudent(student);
+
+	students[0] = copyStudent;
+
+	count++;
+}
+
+void StudentArray::pushFront(Student&& student)
+{
+	if (count == capacity)
+		resize();
+
+	for (size_t i = 0; i < count; i++)
+	{
+		students[i + 1] = students[i];
+	}
+
+	students[0] = student;
+
+	count++;
+}
+
+const Student& StudentArray::getBack() const
+{
+	return students[0];
+}
+
+const Student& StudentArray::getFront() const
+{
+	return students[count - 1];
+}
+
+size_t StudentArray::size() const
+{
+	return count;
+}
+
+Student& StudentArray::at(unsigned index) const
+{
+	if (index > 0 && index < size())
+		return students[index];
+
+	Student defaultStudent;
+	return defaultStudent;
+}
+
+StudentArray::~StudentArray()
+{
+	free();
+}
