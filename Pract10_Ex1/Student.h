@@ -19,7 +19,7 @@ public:
 	Student(Student&& other);
 
 	Student& operator=(const Student& other);
-	Student& operator=(Student&& other);
+	Student& operator=(Student&& other) noexcept;
 
 	const char* getName() const;
 	const char* getSpeciality() const;

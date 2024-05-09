@@ -65,7 +65,7 @@ Student& Student::operator=(const Student& other)
 	return *this;
 }
 
-Student& Student::operator=(Student&& other)
+Student& Student::operator=(Student&& other) noexcept
 {
 	if (this != &other)
 	{

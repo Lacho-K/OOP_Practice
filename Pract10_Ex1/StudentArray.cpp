@@ -77,11 +77,7 @@ void StudentArray::pushBack(const Student& student)
 	if (count == capacity)
 		resize();
 
-	unsigned index = count++;
-
-	students[index].setFn(student.getFn());
-	students[index].setName(student.getName());
-	students[index].setSpeciality(student.getSpeciality());
+	students[count++] = student;
 }
 
 void StudentArray::pushBack(Student&& student)
@@ -89,7 +85,7 @@ void StudentArray::pushBack(Student&& student)
 	if (count == capacity)
 		resize();
 
-	students[count++] = student;
+	students[count++] = std::move(student);
 }
 
 void StudentArray::pushFront(const Student& student)
@@ -97,7 +93,7 @@ void StudentArray::pushFront(const Student& student)
 	if (count == capacity)
 		resize();
 
-	for (size_t i = 0; i < count; i++)
+	for (size_t i = 0; i < count - 1; i++)
 	{
 		students[i + 1] = students[i];
 	}
@@ -126,12 +122,12 @@ void StudentArray::pushFront(Student&& student)
 
 const Student& StudentArray::getBack() const
 {
-	return students[0];
+	return students[count - 1];
 }
 
 const Student& StudentArray::getFront() const
 {
-	return students[count - 1];
+	return students[0];
 }
 
 size_t StudentArray::size() const
