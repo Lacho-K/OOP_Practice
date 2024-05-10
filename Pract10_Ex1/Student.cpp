@@ -7,6 +7,7 @@ void Student::free()
 {
 	delete[] _name;
 	delete[] _speciality;
+
 	_name = nullptr;
 	_speciality = nullptr;
 	_fn = 0;
@@ -14,9 +15,12 @@ void Student::free()
 
 void Student::copyFrom(const Student& other)
 {
-	setName(other._name);
-	setSpeciality(other._speciality);
-	setFn(other._fn);
+	_name = new char[strlen(other._name) + 1];
+	_speciality = new char[strlen(other._speciality) + 1];
+
+	strcpy(_name, other._name);
+	strcpy(_speciality, other._speciality);
+	_fn = other._fn;
 }
 
 void Student::moveFrom(Student&& other)
