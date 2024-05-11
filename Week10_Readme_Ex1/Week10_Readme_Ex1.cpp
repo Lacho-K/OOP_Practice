@@ -12,6 +12,10 @@ int main()
 
 	b.addAlcoholDrink("Zagorka", 500, 5); //1x Zagorka, 5% alc,  500 ml
 
+	/*Bar b2;
+
+	b2 = b;*/
+
 	b.getAlcoholDrink(); // Zagorka 
 
 	b.getDrink(); // Coke

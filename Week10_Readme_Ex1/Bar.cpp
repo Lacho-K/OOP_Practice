@@ -1,42 +1,42 @@
 #include "Bar.h"
 #include <iostream>
 
-Bar::Bar(const Bar& other)
-{
-	copyFrom(other);
-}
-
-Bar::Bar(Bar&& other) noexcept
-{
-	moveFrom(std::move(other));
-}
-
-Bar& Bar::operator=(const Bar& other)
-{
-	if (this != &other)
-	{
-		free();
-		copyFrom(other);
-	}
-
-	return *this;
-}
-
-Bar& Bar::operator=(Bar&& other) noexcept
-{
-	if (this != &other)
-	{
-		free();
-		moveFrom(std::move(other));
-	}
-
-	return *this;
-}
+//Bar::Bar(const Bar& other)
+//{
+//	copyFrom(other);
+//}
+//
+//Bar::Bar(Bar&& other) noexcept
+//{
+//	moveFrom(std::move(other));
+//}
+//
+//Bar& Bar::operator=(const Bar& other)
+//{
+//	if (this != &other)
+//	{
+//		free();
+//		copyFrom(other);
+//	}
+//
+//	return *this;
+//}
+//
+//Bar& Bar::operator=(Bar&& other) noexcept
+//{
+//	if (this != &other)
+//	{
+//		free();
+//		moveFrom(std::move(other));
+//	}
+//
+//	return *this;
+//}
 
 void Bar::addDrink(const char* name, unsigned ml, unsigned quantity)
 {
 	if (drinksCount + quantity > drinksCapacity)
-		return;
+		throw std::exception("Not enough capacity!");
 
 	for (size_t i = 0; i < quantity; i++)
 	{
@@ -48,7 +48,7 @@ void Bar::addDrink(const char* name, unsigned ml, unsigned quantity)
 void Bar::addAlcoholDrink(const char* name, unsigned ml, unsigned alcPercent, unsigned quantity)
 {
 	if (drinksCount + quantity > drinksCapacity)
-		return;
+		throw std::exception("Not enough capacity!");
 
 	for (size_t i = 0; i < quantity; i++)
 	{
@@ -61,99 +61,93 @@ void Bar::addAlcoholDrink(const char* name, unsigned ml, unsigned alcPercent, un
 
 const Drink& Bar::getDrink()
 {
-	Drink maxDrink;
+	unsigned maxDrinkIndex = 0;
 	unsigned maxMl = 0;
 
 	for (size_t i = 0; i < drinksCount; i++)
 	{
 		if (drinks[i].getAlcPercent() == 0 && drinks[i].getMl() > maxMl)
 		{
-			maxDrink = drinks[i];
+			maxDrinkIndex = i;
 			maxMl = drinks[i].getMl();
 		}
 	}
 
 	soldDrinks++;
-	mlSold += maxDrink.getMl();
+	mlSold += drinks[maxDrinkIndex].getMl();
 
-	return maxDrink;
+	return drinks[maxDrinkIndex];
 }
 
 const AlcoholDrink& Bar::getAlcoholDrink()
 {
-	AlcoholDrink maxDrink;
+	unsigned maxDrinkIndex = 0;
 	unsigned maxMl = 0;
 
 	for (size_t i = 0; i < drinksCount; i++)
 	{
 		if (drinks[i].getAlcPercent() > 0 && drinks[i].getMl() > maxMl)
 		{
-			maxDrink = drinks[i];
+			maxDrinkIndex = i;
 			maxMl = drinks[i].getMl();
 		}
 	}
 
 	soldAlcoholDrinks++;
-	mlSold += maxDrink.getMl();
+	mlSold += drinks[maxDrinkIndex].getMl();
 
-	return maxDrink;
+	return drinks[maxDrinkIndex];
 }
 
-unsigned Bar::getAlocholDrinksSold()
+unsigned Bar::getAlocholDrinksSold() const
 {
 	return soldAlcoholDrinks;
 }
 
-unsigned Bar::getDrinksSold()
+unsigned Bar::getDrinksSold() const
 {
 	return soldDrinks;
 }
 
-unsigned Bar::getDrinksMlSold()
+unsigned Bar::getDrinksMlSold() const
 {
 	return mlSold;
 }
 
-Bar::~Bar()
-{
-	free();
-}
-
-void Bar::copyFrom(const Bar& other)
-{
-	drinks = new AlcoholDrink[drinksCapacity];
-
-	for (size_t i = 0; i < other.drinksCount; i++)
-	{
-		drinks[i] = other.drinks[i];
-	}
-
-	drinksCount = other.drinksCount;
-	soldDrinks = other.soldDrinks;
-	soldAlcoholDrinks = other.soldAlcoholDrinks;
-}
-
-void Bar::moveFrom(Bar&& other)
-{
-	drinks = other.drinks;
-	drinksCount = other.drinksCount;
-	soldDrinks = other.soldDrinks;
-	soldAlcoholDrinks = other.soldAlcoholDrinks;
-
-	other.drinks = nullptr;
-	other.drinksCount = 0;
-	other.soldDrinks = 0;
-	other.soldAlcoholDrinks = 0;
-	other.drinksCapacity = 0;
-}
-
-void Bar::free()
-{
-	delete[] drinks;
-
-	drinks = nullptr;
-	drinksCount = 0;
-	soldDrinks = 0;
-	soldAlcoholDrinks = 0;
-	drinksCapacity = 0;
-}
+//void Bar::copyFrom(const Bar& other)
+//{
+//	//drinks = new AlcoholDrink[drinksCapacity];
+//
+//	for (size_t i = 0; i < other.drinksCount; i++)
+//	{
+//		drinks[i] = other.drinks[i];
+//	}
+//
+//	drinksCount = other.drinksCount;
+//	soldDrinks = other.soldDrinks;
+//	soldAlcoholDrinks = other.soldAlcoholDrinks;
+//}
+//
+//void Bar::moveFrom(Bar&& other)
+//{
+//	//drinks = other.drinks;
+//	drinksCount = other.drinksCount;
+//	soldDrinks = other.soldDrinks;
+//	soldAlcoholDrinks = other.soldAlcoholDrinks;
+//
+//	//other.drinks = nullptr;
+//	other.drinksCount = 0;
+//	other.soldDrinks = 0;
+//	other.soldAlcoholDrinks = 0;
+//	other.drinksCapacity = 0;
+//}
+//
+//void Bar::free()
+//{
+//
+//	//drinks = nullptr;
+//	drinksCount = 0;
+//	soldDrinks = 0;
+//	soldAlcoholDrinks = 0;
+//	drinksCapacity = 0;
+//}

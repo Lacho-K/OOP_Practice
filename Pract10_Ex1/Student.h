@@ -2,9 +2,9 @@
 
 class Student
 {
-	char* _name;
-	char* _speciality;
-	unsigned _fn;
+	char* _name = nullptr;
+	char* _speciality = nullptr;
+	unsigned _fn = 0;
 
 	void copyFrom(const Student& other);
 	void moveFrom(Student&& other);
@@ -13,10 +13,10 @@ class Student
 
 public:
 
-	Student();
+	Student() = default;
 	Student(const Student& other);
 	Student(const char* name, const char* speciality, unsigned fn);
-	Student(Student&& other);
+	Student(Student&& other) noexcept;
 
 	Student& operator=(const Student& other);
 	Student& operator=(Student&& other) noexcept;

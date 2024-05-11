@@ -15,15 +15,20 @@ int main()
 	st3.setSpeciality("Cook2");
 	st3.setFn(1122);
 
-	std::cout << st3.getName() << std::endl;
-	std::cout << st3.getSpeciality();
+	Student st4("Ababa", "qweertyt", 9999);
 
 	StudentArray sArr;
 
-	// this throws an error
 	sArr.pushBack(st3);
-	sArr.pushBack(st);
+	sArr.pushBack(st3);
+	sArr.pushFront(std::move(st));
+	sArr.pushFront(st4);
 
 	Student front = sArr.getFront();
-	Student back = sArr.getBack();
+	//Student back = sArr.getBack();
+
+	Student at = sArr.at(0);
+	Student at1 = sArr.at(1);
+	Student at2 = sArr.at(2);
+	Student at3 = sArr.at(3);
 }

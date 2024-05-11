@@ -35,11 +35,13 @@ void StudentArray::resize()
 	students = newArr;
 }
 
-StudentArray::StudentArray()
+StudentArray::StudentArray(): count(0), capacity(8)
 {
-	students = new Student[capacity]();
-	count = 0;
-	capacity = 8;
+	students = new Student[capacity];
+	for (size_t i = 0; i < capacity; i++)
+	{
+		students[i] = Student();
+	}
 }
 
 StudentArray::StudentArray(const StudentArray& other)
@@ -93,14 +95,12 @@ void StudentArray::pushFront(const Student& student)
 	if (count == capacity)
 		resize();
 
-	for (size_t i = 0; i < count - 1; i++)
+	for (size_t i = 0; i < count; i++)
 	{
-		students[i + 1] = students[i];
+		students[count - i] = students[count - (i + 1)];
 	}
 
-	Student copyStudent(student);
-
-	students[0] = copyStudent;
+	students[0] = student;
 
 	count++;
 }
@@ -112,7 +112,7 @@ void StudentArray::pushFront(Student&& student)
 
 	for (size_t i = 0; i < count; i++)
 	{
-		students[i + 1] = students[i];
+		students[count - i] = students[count - (i + 1)];
 	}
 
 	students[0] = student;
@@ -137,11 +137,11 @@ size_t StudentArray::size() const
 
 Student& StudentArray::at(unsigned index) const
 {
-	if (index > 0 && index < size())
-		return students[index];
+	if (index < 0 || index > count - 1)
+		throw std::exception("Index out of range!");
+		
 
-	Student defaultStudent;
-	return defaultStudent;
+	return students[index];
 }
 
 StudentArray::~StudentArray()

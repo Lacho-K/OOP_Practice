@@ -34,15 +34,11 @@ void Student::moveFrom(Student&& other)
 	other._fn = 0;
 }
 
-Student::Student()
-{
-	_name = nullptr;
-	_speciality = nullptr;
-	_fn = 0;
-}
-
 Student::Student(const char* name, const char* speciality, unsigned fn)
 {
+	if (!name || _name == name || !isValidName(name))
+		return;
+
 	setName(name);
 	setSpeciality(speciality);
 	setFn(fn);
@@ -53,7 +49,7 @@ Student::Student(const Student& other)
 	copyFrom(other);
 }
 
-Student::Student(Student&& other)
+Student::Student(Student&& other) noexcept
 {
 	moveFrom(std::move(other));
 }

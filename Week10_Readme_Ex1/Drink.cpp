@@ -76,6 +76,9 @@ Drink::~Drink()
 
 void Drink::copyFrom(const Drink& other)
 {
+	if (!other._name)
+		return;
+
 	_name = new char[strlen(other._name) + 1];
 
 	strcpy(_name, other._name);
