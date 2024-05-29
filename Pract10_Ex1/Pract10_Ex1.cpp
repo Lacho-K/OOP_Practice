@@ -15,7 +15,7 @@ int main()
 	st3.setSpeciality("Cook2");
 	st3.setFn(1122);
 
-	Student st4("Ababa", "qweertyt", 9999);
+	Student st4("Gosheto", "Injenera", 2312);
 
 	StudentArray sArr;
 
