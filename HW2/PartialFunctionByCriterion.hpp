@@ -7,18 +7,12 @@ class PartialFunctionByCriterion : public PartialFunction
     Func _func;
 
 public:
-    PartialFunctionByCriterion(Func func) : _func(func) {}
+    PartialFunctionByCriterion(const Func& func) : _func(func) {}
 
     bool isDefinedAt(int x) const override 
     {
-        int32_t result = _func(x);
-        for (long i = INT32_MIN; i < INT32_MAX; i++)
-        {
-            if (result == _func(i) && i != x)
-                return 0;
-        }
-
-        return 1;
+        FuncResult res = _func(x);
+        return res.defined;
     }
 
     FuncResult operator()(int x) const override
@@ -28,8 +22,13 @@ public:
             throw::std::exception("Function is not defined");
 
         FuncResult res;
-        res.defined = isDefinedAt(x);
-        res.result = _func(x);
+        res.defined = isDefined;
+        res.result = _func(x).result;
         return res;
+    }
+
+    virtual PartialFunction* clone() const override
+    {
+        return new PartialFunctionByCriterion<Func>(_func);
     }
 };

@@ -7,9 +7,11 @@ struct FuncResult
     int result;
 };
 
-class PartialFunction {
+class PartialFunction 
+{
 public:
     virtual bool isDefinedAt(int32_t x) const = 0;
     virtual FuncResult operator()(int32_t x) const = 0;
+    virtual PartialFunction* clone() const = 0;
     virtual ~PartialFunction() = default;
 };

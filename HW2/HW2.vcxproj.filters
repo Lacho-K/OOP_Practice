@@ -18,13 +18,19 @@
     <ClCompile Include="HW2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PartialFunctionByCriterion .hpp">
+    <ClCompile Include="PartialFunctionByCriterion.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaximumPartialFunction.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PartialFunction.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MinimumPartialFunction.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

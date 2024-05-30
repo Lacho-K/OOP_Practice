@@ -140,9 +140,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="HW2.cpp" />
-    <ClCompile Include="PartialFunctionByCriterion .hpp" />
+    <ClCompile Include="MaximumPartialFunction.hpp" />
+    <ClCompile Include="PartialFunctionByCriterion.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MinimumPartialFunction.hpp" />
     <ClInclude Include="PartialFunction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
