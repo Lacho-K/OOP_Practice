@@ -7,6 +7,8 @@ struct FuncResult
     int result;
 };
 
+constexpr int MAX_POINTS = 32;
+
 class PartialFunction 
 {
 public:

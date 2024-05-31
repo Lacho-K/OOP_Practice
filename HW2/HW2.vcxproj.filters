@@ -32,5 +32,14 @@
     <ClInclude Include="MinimumPartialFunction.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Type0Function.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Type1Function.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Type2Function.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

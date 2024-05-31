@@ -144,8 +144,11 @@
     <ClCompile Include="PartialFunctionByCriterion.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Type0Function.hpp" />
     <ClInclude Include="MinimumPartialFunction.hpp" />
     <ClInclude Include="PartialFunction.h" />
+    <ClInclude Include="Type1Function.hpp" />
+    <ClInclude Include="Type2Function.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
