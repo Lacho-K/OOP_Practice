@@ -34,8 +34,11 @@ public:
 
     FuncResult operator()(int x) const override 
     {
-        if(!isDefinedAt(x))
-            throw std::exception("Function is not defined at this point.");
+        if (!isDefinedAt(x))
+        {
+            std::cout << "Function is not defined at " << x;
+            throw std::exception(".");
+        }
 
         for (int i = 0; i < count; i++) 
         {

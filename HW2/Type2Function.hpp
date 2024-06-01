@@ -20,20 +20,18 @@ public:
     }
 
     bool isDefinedAt(int x) const override
-    {
-        for (int i = 0; i < count; i++)
-        {
-            if (args[i] == x) return true;
-        }
-        return false;
+    {       
+        return true;
     }
 
     FuncResult operator()(int x) const override
     {
-        if (!isDefinedAt(x))
-            return { 0, 0 };
+        for (int i = 0; i < count; i++)
+        {
+            if (args[i] == x) return { 1, 1 };
+        }
 
-        return { 1, 1 };
+        return { 1, 0 };
     }
 
     PartialFunction* clone() const override

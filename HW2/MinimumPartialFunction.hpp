@@ -11,12 +11,12 @@ private:
     void copyFrom(const MinimumPartialFunction& other)
     {
         functions = new PartialFunction * [other.capacity];
+        capacity = other.capacity;
+        count = other.count;
         for (size_t i = 0; i < count; ++i)
         {
             functions[i] = other.functions[i]->clone();
         }
-        capacity = other.capacity;
-        count = other.count;
     }
 
     void moveFrom(MinimumPartialFunction&& other)
