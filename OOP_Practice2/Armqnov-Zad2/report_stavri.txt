@@ -1,0 +1,3 @@
+Egg 0: name: Red, size: 10
+Egg 1: name: Blue, size: 20
+Egg 2: name: Green, size: 30
