@@ -24,6 +24,8 @@ class Player
 
 	void copyDynamic(const Player& other);
 
+	void copyFrom(const Player& other);
+
 	void stealData(Player&& other) noexcept;
 
 	void swapData(Player& other) noexcept;

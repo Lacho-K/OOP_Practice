@@ -17,8 +17,20 @@ void Player::copyDynamic(const Player& other)
 	strcpy(name, other.name);
 }
 
+void Player::copyFrom(const Player& other)
+{
+	copyDynamic(other);
+	setAttackPower(other.attackDamage);
+	health = other.health;
+	weapon = other.weapon;
+	position = other.position;
+}
+
 void Player::stealData(Player&& other)
 {
+	if (other.attackDamage < 0)
+		throw std::invalid_argument("attack cannot be < 0");
+
 	health = other.health;
 	name = other.name;
 	position = other.position;
@@ -68,6 +80,7 @@ void Player::setAttackPower(unsigned attackPower)
 {
 	if (attackPower < 0)
 		throw std::invalid_argument("attack power cannot be < 0");
+
 	this->attackDamage = attackPower;
 }
 
@@ -75,11 +88,7 @@ Player::Player(const Player& other)
 {
 	try
 	{
-		copyDynamic(other);
-		setAttackPower(other.attackDamage);
-		health = other.health;
-		weapon = other.weapon;
-		position = other.position;
+		copyFrom(other);
 	}
 	catch (...)
 	{
@@ -90,9 +99,6 @@ Player::Player(const Player& other)
 
 Player::Player(Player&& other)
 {
-	if (other.attackDamage < 0)
-		throw std::invalid_argument("attack cannot be < 0");
-
 	stealData(std::move(other));
 }
 
@@ -100,8 +106,25 @@ Player& Player::operator=(const Player& other)
 {
 	if (this != &other)
 	{
-		// ударихме на камък
-		Player copy(other);
-
+		free();
+		copyFrom(other);
 	}
+
+	return *this;
+}
+
+Player& Player::operator=(Player&& other)
+{
+	if (this != &other)
+	{
+		free();
+		stealData(std::move(other));
+	}
+
+	return *this;
+}
+
+Player::~Player()
+{
+	free();
 }
