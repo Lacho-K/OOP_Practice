@@ -70,14 +70,22 @@ void Player::move(int offsetX, int offsetY)
 	position.y += offsetY;
 }
 
-void Player::handleAttack(unsigned recievedDamage)
+void Player::handleAttack(const Player& attacker)
 {
-	health -= recievedDamage;
+	if (position.areAdjacent(attacker.position))
+		health -= attacker.getAttackPower();
+
+	if (health < 0)
+		health = 0;
 }
 
 void Player::attack(Player& attacked)
 {
-	attacked.health -= attackDamage;
+	if(position.areAdjacent(attacked.position))
+		attacked.health -= attackDamage;
+
+	if (attacked.health < 0)
+		attacked.health = 0;
 }
 
 void Player::print() const
@@ -100,6 +108,16 @@ void Player::setAttackPower(unsigned attackPower)
 		throw std::invalid_argument("attack power cannot be < 0");
 
 	this->attackDamage = attackPower;
+}
+
+bool Player::isAlive() const
+{
+	return health > 0;
+}
+
+const char* Player::getName() const
+{
+	return name;
 }
 
 Player::Player(unsigned health, const char* name, Weapons weapon, unsigned attackDamage)
@@ -125,7 +143,7 @@ Player::Player(const Player& other)
 	}
 }
 
-Player::Player(Player&& other)
+Player::Player(Player&& other) noexcept
 {
 	stealData(std::move(other));
 }

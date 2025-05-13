@@ -13,7 +13,9 @@ void Book::copyDynamic(const Book& other)
 	authorName = new (std::nothrow) char[strlen(other.authorName) + 1];
 
 	if (!authorName)
+	{
 		throw std::runtime_error("authorName not created");
+	}
 
 	strcpy(bookName, other.bookName);
 	strcpy(authorName, other.authorName);

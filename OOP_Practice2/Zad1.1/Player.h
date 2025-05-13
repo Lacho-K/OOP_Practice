@@ -10,7 +10,9 @@ enum class Weapons
 
 class Player
 {
+protected:
 	unsigned health = 0;
+private:
 	char* name = nullptr;
 
 	struct Point {
@@ -39,20 +41,26 @@ public:
 
 	void move(int offsetX, int offsetY);
 
-	virtual void handleAttack(unsigned receivedDamage) = 0;
+	virtual void handleAttack(const Player& attacker);
 
-	virtual void attack(Player& attacked) = 0;
+	virtual void attack(Player& attacked);
 
 	virtual void print() const;
+
+	virtual Player* clone() const = 0;
 
 	unsigned getAttackPower() const;
 
 	void setAttackPower(unsigned attackPower);
 
+	bool isAlive() const;
+
+	const char* getName() const;
+
 	Player() = default;
 	Player(unsigned health, const char* name, Weapons weapon, unsigned attackDamage);
 	Player(const Player& other);
-	Player(Player&& other);
+	Player(Player&& other) noexcept;
 
 	//не може да променяме името след създаване(по условие)
 	Player& operator=(const Player& other) = delete;

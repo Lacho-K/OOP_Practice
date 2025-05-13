@@ -15,10 +15,10 @@ void Backpack::swap(Backpack& other)
 
 void Backpack::copyDynamic(const Backpack& other)
 {
-	books = new Book[other.cap];
-
 	if (other.count > other.cap || other.currentWeight > other.maxWeight)
 		throw std::logic_error("invalid object");
+
+	books = new Book[other.cap];
 
 	for (int i = 0; i < other.count; i++)
 	{

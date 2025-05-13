@@ -1,5 +1,11 @@
 #include "Warrior.h"
 #include <stdexcept>
+#include <iostream>
+
+Warrior::Warrior(const Warrior& other) : Player(other)
+{
+	setArmour(other.armour);
+}
 
 Warrior::Warrior(unsigned armour, unsigned health, const char* name, Weapons weapon, unsigned attackDamage)
 	:Player(health, name, weapon, attackDamage)
@@ -7,17 +13,27 @@ Warrior::Warrior(unsigned armour, unsigned health, const char* name, Weapons wea
 	setArmour(armour);
 }
 
-void Warrior::handleAttack(unsigned recievedDamage)
+void Warrior::handleAttack(const Player& attacker)
 {
-	if (armour - recievedDamage <= 0)
+	if (armour - attacker.getAttackPower() <= 0)
 	{
 		armour = 0;
-		Player::handleAttack(recievedDamage - armour);
+		health -= (attacker.getAttackPower() - armour);
+
+		if (health < 0)
+			health = 0;
 	}
 	else
 	{
-		armour -= recievedDamage;
+		armour -= attacker.getAttackPower();
 	}
+}
+
+void Warrior::print() const
+{
+	Player::print();
+	std::cout << "Warrior info: " << std::endl;
+	std::cout << "Armour: " << armour << std::endl;
 }
 
 void Warrior::setArmour(unsigned armour)
@@ -31,4 +47,9 @@ void Warrior::setArmour(unsigned armour)
 unsigned Warrior::getArmour() const
 {
 	return armour;
+}
+
+Player* Warrior::clone() const
+{
+	return new Warrior(*this);
 }
