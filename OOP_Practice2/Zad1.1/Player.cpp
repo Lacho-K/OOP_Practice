@@ -1,10 +1,12 @@
 ﻿#include "Player.h"
 #include <cmath>
 #include <stdexcept>
+#include <iostream>
+#pragma warning (disable:4996)
 
 bool Player::Point::areAdjacent(const Point& other) const
 {
-	return abs(x - other.x) == 1 && abs(y - other.y) == 1;
+	return abs(x - other.x) == 1 || abs(y - other.y) == 1;
 }
 
 void Player::copyDynamic(const Player& other)
@@ -26,27 +28,34 @@ void Player::copyFrom(const Player& other)
 	position = other.position;
 }
 
-void Player::stealData(Player&& other)
+void Player::stealData(Player&& other) noexcept
 {
-	if (other.attackDamage < 0)
-		throw std::invalid_argument("attack cannot be < 0");
-
+	
+	setAttackPower(other.attackDamage);
 	health = other.health;
 	name = other.name;
 	position = other.position;
 	weapon = other.weapon;
-	attackDamage = other.attackDamage;
 
 	other.name = nullptr;
 }
 
-void Player::swapData(Player& other) noexcept
+const char* Player::weaponToStr() const
 {
-	std::swap(health, other.health);
-	std::swap(name, other.name);
-	std::swap(position, other.position);
-	std::swap(weapon, other.weapon);
-	std::swap(attackDamage, other.attackDamage);
+	switch ((int)weapon)
+	{
+	case 0:
+		return "SWORD";
+	case 1:
+		return "WAND";
+	case 2:
+		return "STAFF";
+	case 3:
+		return "AXE";
+	default:
+		return "UNKNOWN";
+		break;
+	}
 }
 
 void Player::free()
@@ -61,14 +70,23 @@ void Player::move(int offsetX, int offsetY)
 	position.y += offsetY;
 }
 
-void Player::handleAttack(const Player& attacker)
+void Player::handleAttack(unsigned recievedDamage)
 {
-	health -= attacker.getAttackPower();
+	health -= recievedDamage;
 }
 
 void Player::attack(Player& attacked)
 {
 	attacked.health -= attackDamage;
+}
+
+void Player::print() const
+{
+	std::cout << "Player info: " << std::endl;
+	std::cout << "Name: " << name << std::endl;
+	std::cout << "Health: " << health << std::endl;
+	std::cout << "Weapon: " << weaponToStr() << std::endl;
+	std::cout << "Damage: " << attackDamage << std::endl;
 }
 
 unsigned Player::getAttackPower() const
@@ -82,6 +100,16 @@ void Player::setAttackPower(unsigned attackPower)
 		throw std::invalid_argument("attack power cannot be < 0");
 
 	this->attackDamage = attackPower;
+}
+
+Player::Player(unsigned health, const char* name, Weapons weapon, unsigned attackDamage)
+	:health(health), weapon(weapon), attackDamage(attackDamage)
+{
+	if (!name)
+		throw std::invalid_argument("name cannot be nullptr");
+
+	this->name = new char[strlen(name) + 1];
+	strcpy(this->name, name);
 }
 
 Player::Player(const Player& other)
@@ -100,28 +128,6 @@ Player::Player(const Player& other)
 Player::Player(Player&& other)
 {
 	stealData(std::move(other));
-}
-
-Player& Player::operator=(const Player& other)
-{
-	if (this != &other)
-	{
-		free();
-		copyFrom(other);
-	}
-
-	return *this;
-}
-
-Player& Player::operator=(Player&& other)
-{
-	if (this != &other)
-	{
-		free();
-		stealData(std::move(other));
-	}
-
-	return *this;
 }
 
 Player::~Player()
