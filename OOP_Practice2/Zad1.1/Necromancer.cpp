@@ -95,10 +95,15 @@ void Necromancer::attack(Player& attacked)
 	Player::attack(attacked);
 
 	if (!attacked.isAlive())
-		addPlayer(&attacked);
+		addPlayer(attacked.clone());
 }
 
 Player* Necromancer::clone() const
 {
 	return new Necromancer(*this);
+}
+
+Necromancer::~Necromancer()
+{
+	free();
 }

@@ -15,17 +15,19 @@ Warrior::Warrior(unsigned armour, unsigned health, const char* name, Weapons wea
 
 void Warrior::handleAttack(const Player& attacker)
 {
-	if (armour - attacker.getAttackPower() <= 0)
+	unsigned attack = attacker.getAttackPower();
+
+	if (attack >= armour)
 	{
+		health -= (attack - armour);
 		armour = 0;
-		health -= (attacker.getAttackPower() - armour);
 
 		if (health < 0)
 			health = 0;
 	}
 	else
 	{
-		armour -= attacker.getAttackPower();
+		armour -= attack;
 	}
 }
 

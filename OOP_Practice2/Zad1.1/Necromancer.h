@@ -23,4 +23,7 @@ public:
 
 	Necromancer& operator=(const Necromancer& other) = delete;
 	Necromancer& operator=(Necromancer&& other) = delete;
+
+
+	virtual ~Necromancer();
 };
