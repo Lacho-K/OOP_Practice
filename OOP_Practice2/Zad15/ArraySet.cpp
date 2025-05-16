@@ -2,7 +2,9 @@
 #include <stdexcept>
 
 ArraySet::ArraySet() : nums(nullptr), count(0), cap(8)
-{}
+{
+	nums = new int[cap];
+}
 
 ArraySet::ArraySet(size_t cap):count(0)
 {
@@ -125,7 +127,7 @@ ArraySet::~ArraySet()
 
 void ArraySet::ensureValidObject(const ArraySet& other) const
 {
-	if (other.count > other.cap)
+	if (other.count > other.cap || !other.nums)
 		throw std::invalid_argument("Invalid object");
 }
 

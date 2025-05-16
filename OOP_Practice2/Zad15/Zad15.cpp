@@ -8,7 +8,8 @@ bool mon(IntSet* sets[], int n)
 {
     for (int i = 0; i < n - 1; i++)
     {
-        if (!(*sets[i] < *sets[i + 1])) return false;
+        if (!(*sets[i] < *sets[i + 1])) 
+            return false;
     }
     return true;
 }
