@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Array.hpp" />
+    <ClInclude Include="ArrayDataSource.hpp" />
     <ClInclude Include="DataSource.hpp" />
     <ClInclude Include="DefaultDataSource.hpp" />
     <ClInclude Include="FileDataSorce.hpp" />

@@ -7,10 +7,29 @@ class DataSource
 public:
 	
 	virtual const T& next() = 0;
-	virtual T* getMultiple(unsigned count) = 0;
-	bool canContinue() = 0 const;
-	bool reset() = 0;
-	const T& operator() = 0 const;
+	virtual bool canContinue() = 0 const;
+	virtual bool reset() = 0;
+	virtual const T& operator() = 0 const;
+
+	T* getMultiple(unsigned count)
+	{
+		T* toReturn = new T[count];
+
+		try
+		{
+			for (size_t i = 0; i < count; i++)
+			{
+				toReturn[i] = next();
+			}
+		}
+		catch (...)
+		{
+			delete[] toReturn;
+			throw;
+		}
+
+		return toReturn;
+	}
 
 	DataSource& operator>>(T& el) const
 	{
@@ -24,5 +43,12 @@ public:
 	operator bool() const
 	{
 		return canContinue();
+	}
+
+protected:
+	void ensureNext() const
+	{
+		if (!canContinue())
+			throw std::runtime_error("end of data source reached");
 	}
 };

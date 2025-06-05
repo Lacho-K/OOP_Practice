@@ -152,7 +152,7 @@ private:
 		{
 			for (size_t i = 0; i < copied; i++)
 			{
-				delete els[i];
+				delete newContainder[i];
 			}
 			throw;
 		}
