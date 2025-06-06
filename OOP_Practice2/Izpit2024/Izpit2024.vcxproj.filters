@@ -35,5 +35,14 @@
     <ClInclude Include="ArrayDataSource.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AlternateDataSource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratorDataSource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Generator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

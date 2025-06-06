@@ -10,9 +10,12 @@ public:
 	virtual bool canContinue() = 0 const;
 	virtual bool reset() = 0;
 	virtual const T& operator() = 0 const;
+	virtual DataSource* clone() = 0 const;
 
 	T* getMultiple(unsigned count)
 	{
+		ensureNext();
+
 		T* toReturn = new T[count];
 
 		try

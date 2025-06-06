@@ -142,11 +142,14 @@
     <ClCompile Include="Izpit2024.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AlternateDataSource.hpp" />
     <ClInclude Include="Array.hpp" />
     <ClInclude Include="ArrayDataSource.hpp" />
     <ClInclude Include="DataSource.hpp" />
     <ClInclude Include="DefaultDataSource.hpp" />
     <ClInclude Include="FileDataSorce.hpp" />
+    <ClInclude Include="Generator.hpp" />
+    <ClInclude Include="GeneratorDataSource.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

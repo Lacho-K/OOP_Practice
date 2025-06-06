@@ -19,11 +19,16 @@ public:
 
 	virtual bool reset() override
 	{
-		return true;
+		return false;
 	}
 
 	virtual const T& operator() const override
 	{
 		return next();
+	}
+
+	virtual DefaultDataSource<T>* clone() const override
+	{
+		return new DefaultDataSource(*this);
 	}
 };

@@ -1,6 +1,6 @@
 #pragma once
 #include "DataSource.hpp"
-#include <istream>
+#include <utility>
 
 template<typename T>
 class FileDataSource : public DataSource<T>
@@ -25,7 +25,7 @@ public:
 		return currentEl;
 	}
 
-	virtual bool canContinue() = 0 const override
+	virtual bool canContinue() const override
 	{
 		return is.good() && !(is.eof());
 	}
@@ -34,17 +34,23 @@ public:
 	{
 		is.clear();
 		is.seekg(initialPos);
+		return true;
 	}
 
-	virtual const T& operator() = 0 const override
+	virtual const T& operator() const override
 	{
 		return currentEl;
+	}
+
+	virtual FileDataSource<T>* clone() const override
+	{
+		return new FileDataSource(*this);
 	}
 
 
 
 private:
-	std::istream is;
+	std::ifstream is;
 	int initialPos;
 	T currentEl;
 };
