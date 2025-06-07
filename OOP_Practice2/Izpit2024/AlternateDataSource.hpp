@@ -1,22 +1,25 @@
 #pragma once
-#include "DataSource.hpp";
+#include "DataSource.hpp"
 
 template<typename T>
-class AlternateDataSource : DataSource<T>
+class AlternateDataSource : public DataSource<T>
 {
 public:
 
-	AlternateDataSource(const AlternateDataSource<T>& other) : 
-		AlternateDataSource(other.sources, other.count), 
-		index(other.index) {}
+	AlternateDataSource(const AlternateDataSource<T>& other) :
+		AlternateDataSource(other.sources, other.count)
 
-	AlternateDataSource(const DataSource<T>* src, size_t size)
+	{
+		index = other.index;
+	}
+
+	AlternateDataSource(DataSource<T>** src, size_t size)
 	{
 		copySources(src, size);
 		count = size;
 	}
 
-	AlternateDataSource(AlternateDataSource<T>&&)
+	AlternateDataSource(AlternateDataSource<T>&& other)
 	{
 		moveFrom(other);
 	}
@@ -55,11 +58,11 @@ public:
 
 	virtual const T& next() override
 	{
-		ensureNext();
+		this->ensureNext();
 
 		increaseIndex();
 
-		while (!sources[index].canContinue())
+		while (!((*sources[index]).canContinue()))
 		{
 			increaseIndex();
 		}
@@ -82,16 +85,16 @@ public:
 	{
 		for (size_t i = 0; i < count; i++)
 		{
-			sources[i]->reset()
+			sources[i]->reset();
 		}
 		return true;
 	}
 
-	virtual const T& operator() const override
+	virtual const T& operator()() const override
 	{
-		ensureNext();
+		this->ensureNext();
 
-		return sources[index]();
+		return (*sources[index])();
 	}
 
 
@@ -101,7 +104,7 @@ private:
 	size_t index = 0;
 	size_t count = 0;
 
-	DataSource<T>** copySources(const DataSource<T>** src, size_t size)
+	DataSource<T>** copySources(DataSource<T>** src, size_t size)
 	{
 		if (!src || size == 0)
 			throw std::invalid_argument("Empty array of data sources");
@@ -113,7 +116,7 @@ private:
 		{
 			for (; copiedCount < size; copiedCount++)
 			{
-				container[i] = src[i]->clone();
+				container[copiedCount] = src[copiedCount]->clone();
 			}
 		}
 		catch (...)

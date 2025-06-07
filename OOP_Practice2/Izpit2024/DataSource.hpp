@@ -7,10 +7,12 @@ class DataSource
 public:
 	
 	virtual const T& next() = 0;
-	virtual bool canContinue() = 0 const;
+	virtual bool canContinue() const = 0;
 	virtual bool reset() = 0;
-	virtual const T& operator() = 0 const;
-	virtual DataSource* clone() = 0 const;
+	virtual const T& operator()() const = 0;
+	virtual DataSource* clone() const = 0;
+
+	virtual ~DataSource() = default;
 
 	T* getMultiple(unsigned count)
 	{
@@ -50,6 +52,12 @@ public:
 
 protected:
 	void ensureNext() const
+	{
+		if (!canContinue())
+			throw std::runtime_error("end of data source reached");
+	}
+	
+	void ensureNext()
 	{
 		if (!canContinue())
 			throw std::runtime_error("end of data source reached");

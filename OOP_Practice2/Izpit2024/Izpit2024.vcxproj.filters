@@ -18,6 +18,15 @@
     <ClCompile Include="Izpit2024.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FibonacciFunc.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PrimeFunc.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomFunc.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataSource.hpp">
