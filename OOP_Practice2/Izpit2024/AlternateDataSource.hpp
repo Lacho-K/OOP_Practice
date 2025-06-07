@@ -15,9 +15,10 @@ public:
 
 	AlternateDataSource(DataSource<T>** src, size_t size)
 	{
-		copySources(src, size);
+		sources = copySources(src, size);
 		count = size;
 	}
+
 
 	AlternateDataSource(AlternateDataSource<T>&& other)
 	{
@@ -161,7 +162,7 @@ private:
 	void increaseIndex()
 	{
 		index++;
-		if (index > count)
+		if (index >= count)
 			index = 0;
 	}
 };

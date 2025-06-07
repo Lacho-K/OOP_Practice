@@ -154,6 +154,9 @@
     <ClInclude Include="Generator.hpp" />
     <ClInclude Include="GeneratorDataSource.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="RandomStringGenerator.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
