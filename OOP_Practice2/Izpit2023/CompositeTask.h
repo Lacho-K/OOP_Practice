@@ -38,6 +38,6 @@ private:
 	void resize();
 	void swap(CompositeTask& other);
 	void copyDynamic(const char* name, const Task* const * subtasks, 
-		const size_t count, const size_t cap, bool copyName = 1);
+		const size_t count, const size_t cap);
 	void free();
 };

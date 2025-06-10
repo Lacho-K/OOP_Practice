@@ -4,37 +4,39 @@
 
 // strong exception safe(if used in constructor)
 void CompositeTask::copyDynamic(const char* name, const Task* const* subtasks,
-	const size_t count, const size_t cap, bool copyName)
+	const size_t count, const size_t cap)
 {
 	if (!name || *name == '\0')
 		throw std::invalid_argument("Name cannot be empty");
 	if (!subtasks)
 		throw std::invalid_argument("Subtasks cannot be empty");
 
-	if (copyName) 
-	{
-		this->name = new char[strlen(name) + 1];
-		strcpy(this->name, name);
-	}
+	char* tempName = new char[strlen(name) + 1];
+	strcpy(tempName, name);
 
-	this->subtasks = new Task * [cap];
+	Task** tempSubtasks = new Task * [cap];
 	size_t copied = 0;
+
 	try
 	{
 		for (; copied < count; copied++)
 		{
-			this->subtasks[copied] = subtasks[copied]->clone();
+			tempSubtasks[copied] = subtasks[copied]->clone();
 		}
 	}
 	catch (...)
 	{
 		for (size_t i = 0; i < copied; i++)
-		{
-			delete this->subtasks[i];
-		}
-		delete[] this->subtasks;
+			delete tempSubtasks[i];
+		delete[] tempSubtasks;
+		delete[] tempName;
+		throw;
 	}
+
+	this->name = tempName;
+	this->subtasks = tempSubtasks;
 }
+
 
 void CompositeTask::free()
 {
@@ -57,7 +59,7 @@ CompositeTask* CompositeTask::clone() const
 
 unsigned CompositeTask::getTime() const
 {
-	return completionTime + totalTime();
+	return totalTime();
 }
 
 std::ostream& CompositeTask::print(std::ostream& os) const
