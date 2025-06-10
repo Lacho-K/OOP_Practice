@@ -11,9 +11,13 @@ int main()
 {
     DataSource<unsigned>** sources = new DataSource<unsigned>*[3];
 
-    sources[0] = new GeneratorDataSource<unsigned>(new PrimeFunc());
-    sources[1] = new GeneratorDataSource<unsigned>(new FibonacciFunc(25));
-    sources[2] = new GeneratorDataSource<unsigned>(new RandomFunc());
+    FibonacciFunc fibFunc(25);
+    PrimeFunc primeFunc;
+    RandomFunc rndFunc;
+
+    sources[0] = new GeneratorDataSource<unsigned>(&primeFunc);
+    sources[1] = new GeneratorDataSource<unsigned>(&fibFunc);
+    sources[2] = new GeneratorDataSource<unsigned>(&rndFunc);
 
     AlternateDataSource<unsigned> ads(sources, 3);
 
