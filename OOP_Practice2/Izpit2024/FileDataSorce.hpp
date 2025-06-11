@@ -34,7 +34,7 @@ public:
 	{
 		is.clear();
 		is.seekg(initialPos);
-		return true;
+		return is.good();
 	}
 
 	virtual const T& operator() const override
@@ -51,6 +51,6 @@ public:
 
 private:
 	std::ifstream is;
-	int initialPos;
+	std::streampos initialPos;
 	T currentEl;
 };
